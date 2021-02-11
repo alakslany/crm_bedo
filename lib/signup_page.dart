@@ -10,7 +10,8 @@ class SignUp extends StatefulWidget {
 
 class _SignUpState extends State<SignUp> {
   String data = 'none';
-  String _username, _password = "";
+  String _username,
+      _password = "";
   final _formkey = GlobalKey<FormState>();
   bool signupFlage = false;
   FocusNode _usernameFocusNode = FocusNode();
@@ -19,17 +20,17 @@ class _SignUpState extends State<SignUp> {
   final snackBar_login = SnackBar(
       content: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
-    children: [
-      Text('Login'),
-      Icon(Icons.done,color: Colors.green,)
-    ],
-  ));
+        children: [
+          Text('Login'),
+          Icon(Icons.done, color: Colors.green,)
+        ],
+      ));
   final snackBar_fail = SnackBar(
       content: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           Text('Signing Error'),
-          Icon(Icons.phonelink_erase_rounded,color: Colors.green,)
+          Icon(Icons.phonelink_erase_rounded, color: Colors.red,)
         ],
       ));
 
@@ -39,16 +40,10 @@ class _SignUpState extends State<SignUp> {
       body: {'_Name': _username, '_Pass': _password},
     );
     if (res.statusCode == 200) {
-      setState(() {
-        this.data = res.body;
-      });
+      return res.body;
     } else {
-      setState(() {
-        this.data = 'error';
-      });
+      return 'error';
     }
-    print(res.body);
-    return this.data;
   }
 
   Future<String> register() async {
@@ -141,10 +136,11 @@ class _SignUpState extends State<SignUp> {
       validator: (name) {
         Pattern pattern = r'^[A-Za-z0-9]+(?:[ _-][A-Za-z0-9]+)*$';
         RegExp regex = new RegExp(pattern);
-        if (!regex.hasMatch(name)) if (this.signupFlage)
-          return 'Invalid username';
-        else
-          return null;
+        if (!regex.hasMatch(name))
+          if (this.signupFlage)
+            return 'Invalid username';
+          else
+            return null;
         else
           return null;
       },
@@ -204,8 +200,9 @@ class _SignUpState extends State<SignUp> {
         });
         if (_formkey.currentState.validate()) {
           _formkey.currentState.save();
-          this.data = await this.login();
-          if (this.data== 'error')
+          var data = await this.login();
+          print("data "+data);
+          if (data == 'error')
             ScaffoldMessenger.of(context).showSnackBar(snackBar_fail);
           else
             ScaffoldMessenger.of(context).showSnackBar(snackBar_login);
@@ -226,8 +223,8 @@ class _SignUpState extends State<SignUp> {
         fontSize: 16.0);
   }
 
-  void fieldFocusChange(
-      BuildContext context, FocusNode currentFocus, FocusNode nextFocus) {
+  void fieldFocusChange(BuildContext context, FocusNode currentFocus,
+      FocusNode nextFocus) {
     currentFocus.unfocus();
     FocusScope.of(context).requestFocus(nextFocus);
   }
